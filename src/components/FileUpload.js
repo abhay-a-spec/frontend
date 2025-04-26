@@ -7,52 +7,48 @@ const FileUpload = () => {
     const [loading, setLoading] = useState(false); // For loading indicator
     const [errorMessage, setErrorMessage] = useState(''); // For error messages
 
-    // Allowed file types for upload (you can adjust this as per your needs)
     const allowedFileTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 
-    // Handle file selection
     const onFileChange = (e) => {
         const file = e.target.files[0];
 
         if (file && allowedFileTypes.includes(file.type)) {
             setSelectedFile(file);
-            setErrorMessage(''); // Clear error message if file type is valid
+            setErrorMessage('');
         } else {
             setErrorMessage('Invalid file type. Only JPEG, PNG, and PDF files are allowed.');
         }
     };
 
-    // Upload file
     const uploadFile = async () => {
         if (!selectedFile) {
             setErrorMessage('Please select a file to upload.');
             return;
         }
 
-        setLoading(true); // Show loading indicator
+        setLoading(true);
         const formData = new FormData();
         formData.append('file', selectedFile);
 
         try {
-            const res = await axios.post('http://localhost:5000/upload', formData, {
+            const res = await axios.post('https://backend-vso8.onrender.com/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
             alert(res.data.message);
-            fetchFiles(); // Refresh the file list after successful upload
-            setSelectedFile(null); // Reset the selected file
+            fetchFiles();
+            setSelectedFile(null);
         } catch (err) {
             console.error(err);
             setErrorMessage('Error uploading file. Please try again.');
         } finally {
-            setLoading(false); // Hide loading indicator
+            setLoading(false);
         }
     };
 
-    // Fetch list of files
     const fetchFiles = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/files');
+            const res = await axios.get('https://backend-vso8.onrender.com/files');
             setFiles(res.data);
         } catch (err) {
             console.error(err);
@@ -60,9 +56,8 @@ const FileUpload = () => {
         }
     };
 
-    // Download file
     const downloadFile = (id) => {
-        window.location.href = `http://localhost:5000/files/${id}`;
+        window.location.href = `https://backend-vso8.onrender.com/files/${id}`;
     };
 
     useEffect(() => {
@@ -76,10 +71,10 @@ const FileUpload = () => {
             <div>
                 <input type="file" onChange={onFileChange} />
                 <button onClick={uploadFile} disabled={loading || !selectedFile}>Upload</button>
-                {loading && <p>Uploading...</p>} {/* Show loading text */}
+                {loading && <p>Uploading...</p>}
             </div>
 
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} {/* Display error message */}
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
             <h2>Files</h2>
             <ul>
