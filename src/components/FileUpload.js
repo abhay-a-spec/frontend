@@ -4,14 +4,13 @@ import axios from 'axios';
 const FileUpload = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [files, setFiles] = useState([]);
-    const [loading, setLoading] = useState(false); // For loading indicator
-    const [errorMessage, setErrorMessage] = useState(''); // For error messages
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const allowedFileTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 
     const onFileChange = (e) => {
         const file = e.target.files[0];
-
         if (file && allowedFileTypes.includes(file.type)) {
             setSelectedFile(file);
             setErrorMessage('');
@@ -60,6 +59,17 @@ const FileUpload = () => {
         window.location.href = `https://backend-vso8.onrender.com/files/${id}`;
     };
 
+    const deleteFile = async (id) => {
+        try {
+            await axios.delete(`https://backend-vso8.onrender.com/files/${id}`);
+            alert('File deleted successfully');
+            fetchFiles();
+        } catch (err) {
+            console.error(err);
+            setErrorMessage('Error deleting file. Please try again.');
+        }
+    };
+
     useEffect(() => {
         fetchFiles();
     }, []);
@@ -82,6 +92,7 @@ const FileUpload = () => {
                     <li key={file._id}>
                         <span>{file.name}</span>
                         <button onClick={() => downloadFile(file._id)}>Download</button>
+                        <button onClick={() => deleteFile(file._id)} style={{ marginLeft: '10px', color: 'red' }}>Delete</button>
                     </li>
                 ))}
             </ul>
