@@ -38,7 +38,7 @@ const FileUpload = () => {
             fetchFiles();
             setSelectedFile(null);
         } catch (err) {
-            console.error(err);
+            console.error('Error uploading file:', err);
             setErrorMessage('Error uploading file. Please try again.');
         } finally {
             setLoading(false);
@@ -50,7 +50,7 @@ const FileUpload = () => {
             const res = await axios.get('https://backend-vso8.onrender.com/files');
             setFiles(res.data);
         } catch (err) {
-            console.error(err);
+            console.error('Error fetching files:', err);
             setErrorMessage('Error fetching files. Please try again.');
         }
     };
@@ -61,11 +61,12 @@ const FileUpload = () => {
 
     const deleteFile = async (id) => {
         try {
-            await axios.delete(`https://backend-vso8.onrender.com/files/${id}`);
+            console.log(`Attempting to delete file with ID: ${id}`);  // Debugging: check if the ID is correct
+            const res = await axios.delete(`https://backend-vso8.onrender.com/files/${id}`);
             alert('File deleted successfully');
-            fetchFiles();
+            fetchFiles(); // Refresh file list
         } catch (err) {
-            console.error(err);
+            console.error('Error deleting file:', err);
             setErrorMessage('Error deleting file. Please try again.');
         }
     };
