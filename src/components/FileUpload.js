@@ -35,7 +35,7 @@ const FileUpload = () => {
             });
 
             alert(res.data.message);
-            fetchFiles();
+            fetchFiles(); // Fetch the updated file list
             setSelectedFile(null);
         } catch (err) {
             console.error('Upload error:', err);
@@ -59,19 +59,20 @@ const FileUpload = () => {
         window.location.href = `https://backend-vso8.onrender.com/files/${id}`;
     };
 
-    const deleteFile = async (name) => {
+    const deleteFile = async (fileName) => {
         try {
-            const res = await axios.delete(`https://backend-vso8.onrender.com/files/deleteByName/${encodeURIComponent(name)}`);
+            console.log(`Attempting to delete file with name: ${fileName}`);
+            const res = await axios.delete(`https://backend-vso8.onrender.com/files/deleteByName/${encodeURIComponent(fileName)}`);
             alert('File deleted successfully');
-            fetchFiles();
+            fetchFiles(); // Refresh the file list
         } catch (err) {
             console.error('Delete error:', err);
-            setErrorMessage('Could not delete file.');
+            setErrorMessage('Could not delete file. Please try again.');
         }
     };
 
     useEffect(() => {
-        fetchFiles();
+        fetchFiles(); // Fetch the list of files when the component mounts
     }, []);
 
     return (
@@ -86,15 +87,22 @@ const FileUpload = () => {
 
             <h2>Files</h2>
             <ul>
-                {files.map((file) => (
-                    <li key={file._id}>
-                        {file.name}
-                        <button onClick={() => downloadFile(file._id)}>Download</button>
-                        <button onClick={() => deleteFile(file.name)} style={{ color: 'red', marginLeft: '10px' }}>
-                            Delete
-                        </button>
-                    </li>
-                ))}
+                {files.length > 0 ? (
+                    files.map((file) => (
+                        <li key={file._id}>
+                            <span>{file.name}</span>
+                            <button onClick={() => downloadFile(file._id)}>Download</button>
+                            <button 
+                                onClick={() => deleteFile(file.name)} 
+                                style={{ color: 'red', marginLeft: '10px' }}
+                            >
+                                Delete
+                            </button>
+                        </li>
+                    ))
+                ) : (
+                    <p>No files uploaded yet.</p>
+                )}
             </ul>
         </div>
     );
