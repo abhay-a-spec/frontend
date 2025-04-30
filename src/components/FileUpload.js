@@ -15,7 +15,7 @@ const FileUpload = () => {
             setSelectedFile(file);
             setErrorMessage('');
         } else {
-            setErrorMessage('Invalid file type. Only JPEG, PNG, and PDF files are allowed.');
+            setErrorMessage('Only JPEG, PNG, and PDF files are allowed.');
         }
     };
 
@@ -38,8 +38,8 @@ const FileUpload = () => {
             fetchFiles();
             setSelectedFile(null);
         } catch (err) {
-            console.error('Error uploading file:', err);
-            setErrorMessage('Error uploading file. Please try again.');
+            console.error('Upload error:', err);
+            setErrorMessage('Upload failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -50,8 +50,8 @@ const FileUpload = () => {
             const res = await axios.get('https://backend-vso8.onrender.com/files');
             setFiles(res.data);
         } catch (err) {
-            console.error('Error fetching files:', err);
-            setErrorMessage('Error fetching files. Please try again.');
+            console.error('Fetching error:', err);
+            setErrorMessage('Could not fetch file list.');
         }
     };
 
@@ -59,15 +59,14 @@ const FileUpload = () => {
         window.location.href = `https://backend-vso8.onrender.com/files/${id}`;
     };
 
-    const deleteFileByName = async (filename) => {
+    const deleteFile = async (name) => {
         try {
-            console.log(`Attempting to delete file with name: ${filename}`);
-            await axios.delete(`https://backend-vso8.onrender.com/files/deleteByName/${encodeURIComponent(filename)}`);
+            const res = await axios.delete(`https://backend-vso8.onrender.com/files/deleteByName/${encodeURIComponent(name)}`);
             alert('File deleted successfully');
-            fetchFiles(); // Refresh file list
+            fetchFiles();
         } catch (err) {
-            console.error('Error deleting file:', err);
-            setErrorMessage('Error deleting file. Please try again.');
+            console.error('Delete error:', err);
+            setErrorMessage('Could not delete file.');
         }
     };
 
@@ -79,11 +78,9 @@ const FileUpload = () => {
         <div>
             <h1>File Sharing App</h1>
 
-            <div>
-                <input type="file" onChange={onFileChange} />
-                <button onClick={uploadFile} disabled={loading || !selectedFile}>Upload</button>
-                {loading && <p>Uploading...</p>}
-            </div>
+            <input type="file" onChange={onFileChange} />
+            <button onClick={uploadFile} disabled={loading || !selectedFile}>Upload</button>
+            {loading && <p>Uploading...</p>}
 
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
@@ -91,9 +88,11 @@ const FileUpload = () => {
             <ul>
                 {files.map((file) => (
                     <li key={file._id}>
-                        <span>{file.name}</span>
+                        {file.name}
                         <button onClick={() => downloadFile(file._id)}>Download</button>
-                        <button onClick={() => deleteFileByName(file.name)} style={{ marginLeft: '10px', color: 'red' }}>Delete</button>
+                        <button onClick={() => deleteFile(file.name)} style={{ color: 'red', marginLeft: '10px' }}>
+                            Delete
+                        </button>
                     </li>
                 ))}
             </ul>
