@@ -59,10 +59,10 @@ const FileUpload = () => {
         window.location.href = `https://backend-vso8.onrender.com/files/${id}`;
     };
 
-    const deleteFile = async (id) => {
+    const deleteFileByName = async (filename) => {
         try {
-            console.log(`Attempting to delete file with ID: ${id}`);  // Debugging: check if the ID is correct
-            const res = await axios.delete(`https://backend-vso8.onrender.com/files/${id}`);
+            console.log(`Attempting to delete file with name: ${filename}`);
+            await axios.delete(`https://backend-vso8.onrender.com/files/deleteByName/${encodeURIComponent(filename)}`);
             alert('File deleted successfully');
             fetchFiles(); // Refresh file list
         } catch (err) {
@@ -93,7 +93,7 @@ const FileUpload = () => {
                     <li key={file._id}>
                         <span>{file.name}</span>
                         <button onClick={() => downloadFile(file._id)}>Download</button>
-                        <button onClick={() => deleteFile(file._id)} style={{ marginLeft: '10px', color: 'red' }}>Delete</button>
+                        <button onClick={() => deleteFileByName(file.name)} style={{ marginLeft: '10px', color: 'red' }}>Delete</button>
                     </li>
                 ))}
             </ul>
